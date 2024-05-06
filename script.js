@@ -36,17 +36,20 @@ async function start() {
 }
 
 function loadLabeledImages() {
-  const labels = ['김종준', '신현진', '안현수', '홍재영']
-  return Promise.all(
-    labels.map(async label => {
-      const descriptions = []
-      for (let i = 1; i <= 2; i++) {
-        const img = await faceapi.fetchImage(`https://github.com/namao1230/-.git/image/${label}/${i}.jpg`)
-        const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-        descriptions.push(detections.descriptor)
-      }
-
-      return new faceapi.LabeledFaceDescriptors(label, descriptions)
-    })
-  )
+  async function loadLabeledImages() {
+    const labels = ['김종준', '신현진', '안현수', '홍재영'];
+    return Promise.all(
+      labels.map(async label => {
+        const descriptions = [];
+        for (let i = 1; i <= 2; i++) {
+          const img = await faceapi.fetchImage(`https://raw.githubusercontent.com/namao1230/-/main/labeled_images/${label}/${i}.jpg`);
+          const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+          if (detection) {
+            descriptions.push(detection.descriptor);
+          }
+        }
+        return new faceapi.LabeledFaceDescriptors(label, descriptions);
+      })
+    );
+  }
 }
